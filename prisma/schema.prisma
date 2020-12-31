@@ -15,7 +15,7 @@ model Customers {
   password String 
   address String?
   phone String?
-  admin Boolean
+  admin Boolean @default(false)
 }
 
 model Products {
