@@ -1,13 +1,20 @@
 import boom from '@hapi/boom';
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import { customerRegister } from '../serivces/customerService';
+import { createToken } from '../utils/createToken';
+import {
+  customerRegister,
+  customerLogin,
+  getCustomer,
+} from '../services/customerService';
 import responseWithoutError from '../utils/responseWithoutError';
+
 import statusCode from '../utils/httpStatus';
 
-export default {
-  login: async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
+  if (!req.body.id) {
     const errors = validationResult(req);
+    const { email, password } = req.body;
 
     if (!errors.isEmpty()) {
       const error = boom.badRequest();
@@ -15,13 +22,31 @@ export default {
       throw error;
     }
 
-    responseWithoutError(res, {}, statusCode.created);
-  },
-  register: async (req: Request, res: Response) => {
+    const customer = {
+      email,
+      password,
+    };
+
+    const customerLogged = await customerLogin(customer);
+    if (customerLogged) {
+      const token = createToken(customerLogged);
+
+      responseWithoutError(res, customerLogged, statusCode.ok, token);
+    }
+  } else {
+    const id = parseInt(req.body.id, 10);
+
+    const customerLogged = (await getCustomer(id)) || {};
+
+    responseWithoutError(res, customerLogged, statusCode.ok);
+  }
+};
+
+export const register = async (req: Request, res: Response) => {
+  if (!req.body.id) {
     const errors = validationResult(req);
-    const {
-      name, lastname, email, password,
-    } = req.body;
+
+    const { name, lastname, email, password } = req.body;
 
     if (!errors.isEmpty()) {
       const error = boom.badRequest();
@@ -35,8 +60,19 @@ export default {
       email,
       password,
     };
+
     const customerCreated = await customerRegister(customer);
 
-    responseWithoutError(res, customerCreated, statusCode.created);
-  },
+    if (customerCreated) {
+      const token = createToken(customerCreated);
+
+      responseWithoutError(res, customerCreated, statusCode.created, token);
+    }
+  } else {
+    const id = parseInt(req.body.id, 10);
+
+    const customerLogged = (await getCustomer(id)) || {};
+
+    responseWithoutError(res, customerLogged, statusCode.ok);
+  }
 };

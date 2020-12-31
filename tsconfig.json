@@ -5,5 +5,8 @@
     "strict": true,
     "lib": ["esnext"],
     "esModuleInterop": true
-  }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"],
+  "files": ["custom.d.ts"]
 }

@@ -7,7 +7,12 @@ describe('Test Register endpoint', () => {
   it('should verify if exist user and create the user', async () => {
     const response = await request(app)
       .post(loginPath)
-      .send({ email: 'juaniseijas02@gmail.com', password: 'Leonelmessi10_' })
+      .send({
+        email: 'juaniseijas11@gmail.com',
+        password: 'Leonelmessi10_',
+        name: 'Juan',
+        lastname: 'Seijas',
+      })
       .set('Accept', 'application/json')
       .expect(201);
     expect(response.body).toEqual(expect.any(Object));
@@ -16,7 +21,12 @@ describe('Test Register endpoint', () => {
   it('it should send 400 if email is wrong', async () => {
     const response = await request(app)
       .post(loginPath)
-      .send({ email: 'juaniseijas00@gmail.com', password: 'Leonelmessi10_' })
+      .send({
+        email: 'juaniseijas00@gmail.com',
+        password: 'Leonelmessi10_',
+        name: 'Juan',
+        lastname: 'Seijas',
+      })
       .set('Accept', 'application/json')
       .expect(400);
     expect(response.body).toEqual({
@@ -25,7 +35,7 @@ describe('Test Register endpoint', () => {
       message: 'Bad Request',
       details: [
         {
-          value: 'juaniseijas002@gmail.com',
+          value: 'juaniseijas00@gmail.com',
           msg: 'El email ya existe',
           param: 'email',
           location: 'body',

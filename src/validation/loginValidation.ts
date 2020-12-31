@@ -6,25 +6,27 @@ const prisma = new PrismaClient();
 const loginValidation = () => [
   check('email')
     .notEmpty()
-    .withMessage('email is required')
+    .withMessage('El email no puede estar vacio')
     .isEmail()
-    .withMessage('email is invalid')
+    .withMessage('El email es invalido')
     .custom(async (value) => {
-      const email = await prisma.customers.findUnique({
-        where: {
-          email: value,
-        },
-      });
+      if (value) {
+        const email = await prisma.customers.findUnique({
+          where: {
+            email: value,
+          },
+        });
 
-      if (!email) {
-        throw Error('Email doesnt exist');
+        if (!email) {
+          throw Error('El email no existe');
+        }
       }
     }),
 
   check('password')
     .notEmpty()
-    .withMessage('password is required')
+    .withMessage('La clave no puede estar en blanco')
     .isStrongPassword()
-    .withMessage('the password is week'),
+    .withMessage('La clave es debil'),
 ];
 export default loginValidation;
